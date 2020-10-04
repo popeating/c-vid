@@ -32,7 +32,6 @@ export default function App() {
     fetch(url.INCREMENTAL, {})
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
         setData(result);
       });
   }, []);
@@ -45,16 +44,30 @@ export default function App() {
       </View>
     );
   }
-  console.log(colors);
+
   const last_update = Date.parse(mydata[mylen - 1].data);
 
   const date_update = format(last_update, 'dd MMMM yyyy', { locale: itloc });
   const time_update = format(last_update, 'HH:MM', { locale: itloc });
+  const positivi = mydata[mylen - 1].nuovi_positivi;
+  var new_variation =
+    mydata[mylen - 1].nuovi_positivi - mydata[mylen - 2].nuovi_positivi;
+  new_variation = (new_variation > 0 ? '+' : '-') + new_variation;
+
+  const death_variation =
+    mydata[mylen - 1].deceduti - mydata[mylen - 2].deceduti;
+
+  const tamponi = mydata[mylen - 1].tamponi - mydata[mylen - 2].tamponi;
+
+  const rapporto = ((positivi / tamponi) * 100).toFixed(2) + '%';
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.updatecontainer}>
+          <Text style={styles.totali}>
+            CASI TOTALI: {mydata[mylen - 1].totale_casi}
+          </Text>
           <Text style={styles.update}>Aggiornamento</Text>
           <Text style={styles.update}>
             {date_update} {time_update}
@@ -63,26 +76,21 @@ export default function App() {
       </View>
       <StatusBar style="auto" />
 
-      <View style={[styles.positivi]}>
-        <Text>Nuovi positivi {mydata[mylen - 1].nuovi_positivi}</Text>
-        <Text>
-          Variazione da ieri{' '}
-          {mydata[mylen - 1].nuovi_positivi - mydata[mylen - 2].nuovi_positivi}
-        </Text>
+      <View style={[styles.positivicontainer, styles.boxes]}>
+        <Text style={[styles.title]}>Nuovi positivi {positivi}</Text>
+        <Text>Variazione da ieri {new_variation}</Text>
       </View>
-      <View style={[styles.decessi]}>
-        <Text>
-          Descessi {mydata[mylen - 1].deceduti - mydata[mylen - 2].deceduti}
-        </Text>
+      <View style={[styles.decessicontainer, styles.boxes]}>
+        <Text style={[styles.title]}>Decessi {death_variation}</Text>
         <Text>In totale {mydata[mylen - 1].deceduti}</Text>
       </View>
-      <View style={[styles.tamponi]}>
-        <Text>
-          Tamponi {mydata[mylen - 1].tamponi - mydata[mylen - 2].tamponi} /
-          Testati{' '}
+      <View style={[styles.tamponicontainer, styles.boxes]}>
+        <Text style={[styles.title]}>
+          Tamponi {tamponi} / Testati{' '}
           {mydata[mylen - 1].casi_testati - mydata[mylen - 2].casi_testati}
         </Text>
         <Text>In totale {mydata[222].tamponi}</Text>
+        <Text>Rapporto positivi/tamponi {rapporto}</Text>
       </View>
       <StatusBar style="auto" />
     </View>
@@ -93,20 +101,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'center',
+    alignItems: 'center',
     // justifyContent: 'center',
   },
-  positivi: {
+  boxes: {
     padding: 20,
-    backgroundColor: '#dadada',
+    width: '80%',
+    borderRadius: sizes.radius,
+    marginBottom: sizes.base,
   },
-  decessi: {
-    padding: 20,
-    backgroundColor: '#ff0000',
+  positivicontainer: {
+    backgroundColor: colors.tgreen,
   },
-  tamponi: {
-    padding: 20,
-    backgroundColor: '#adadad',
+
+  title: {
+    fontSize: sizes.biggerfont,
+    fontWeight: 'bold',
+  },
+  decessicontainer: {
+    backgroundColor: colors.ruby,
+  },
+  tamponicontainer: {
+    backgroundColor: colors.ogreen,
   },
   header: {
     justifyContent: 'flex-end',
@@ -120,4 +136,10 @@ const styles = StyleSheet.create({
     padding: sizes.padding,
   },
   update: { color: colors.canary, fontSize: sizes.title, fontWeight: '800' },
+  totali: {
+    color: colors.canary,
+    fontSize: sizes.title,
+    fontWeight: '800',
+    marginBottom: 20,
+  },
 });

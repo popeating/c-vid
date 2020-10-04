@@ -9,6 +9,9 @@ const colors = {
 const sizes = {
   base: 16,
   font: 14,
+  bigfont: 16,
+  biggerfont: 18,
+  subtitle: 20,
   padding: 36,
   margin: 36,
   title: 24,
