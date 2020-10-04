@@ -4,6 +4,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import url from './config/config';
 import AsyncStorage from '@react-native-community/async-storage';
 import { format } from 'date-fns';
+import itloc from 'date-fns/locale/it';
+
+import { colors, sizes } from './config/theme';
 
 const storeData = async (value) => {
   try {
@@ -42,10 +45,24 @@ export default function App() {
       </View>
     );
   }
+  console.log(colors);
+  const last_update = Date.parse(mydata[mylen - 1].data);
+
+  const date_update = format(last_update, 'dd MMMM yyyy', { locale: itloc });
+  const time_update = format(last_update, 'HH:MM', { locale: itloc });
 
   return (
     <View style={styles.container}>
-      {<Text>{Date.parse(mydata[mylen - 1].data)}</Text>}
+      <View style={styles.header}>
+        <View style={styles.updatecontainer}>
+          <Text style={styles.update}>Aggiornamento</Text>
+          <Text style={styles.update}>
+            {date_update} {time_update}
+          </Text>
+        </View>
+      </View>
+      <StatusBar style="auto" />
+
       <View style={[styles.positivi]}>
         <Text>Nuovi positivi {mydata[mylen - 1].nuovi_positivi}</Text>
         <Text>
@@ -76,8 +93,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   positivi: {
     padding: 20,
@@ -91,4 +108,16 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#adadad',
   },
+  header: {
+    justifyContent: 'flex-end',
+    width: '100%',
+    height: 250,
+    backgroundColor: colors.blue,
+    borderBottomRightRadius: 100,
+    marginBottom: sizes.base,
+  },
+  updatecontainer: {
+    padding: sizes.padding,
+  },
+  update: { color: colors.canary, fontSize: sizes.title, fontWeight: '800' },
 });
