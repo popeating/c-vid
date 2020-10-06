@@ -21,6 +21,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Data Monitor for Covid-19 in Italy",
+    "githubUrl": "https://github.com/popeating/c-vid"
   }
 }
