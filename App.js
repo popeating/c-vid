@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import url from './config/config';
-import AsyncStorage from '@react-native-community/async-storage';
 import { format } from 'date-fns';
 import itloc from 'date-fns/locale/it';
 import {
@@ -15,24 +14,6 @@ import {
 } from 'react-native-chart-kit';
 
 import { colors, sizes } from './config/theme';
-
-const storeData = async (value) => {
-  try {
-    const jsonValue = JSON.stringify(value);
-    await AsyncStorage.setItem('@latest', jsonValue);
-  } catch (e) {
-    // saving error
-  }
-};
-
-const getData = async () => {
-  try {
-    const jsonValue = await AsyncStorage.getItem('@latest');
-    return jsonValue != null ? JSON.parse(jsonValue) : null;
-  } catch (e) {
-    // error reading value
-  }
-};
 
 export default function App() {
   const [mydata, setData] = useState([]);
@@ -54,7 +35,6 @@ export default function App() {
   }
 
   const last_update = Date.parse(mydata[mylen - 1].data);
-
   const date_update = format(last_update, 'dd MMMM yyyy', { locale: itloc });
   const time_update = format(last_update, 'HH:MM', { locale: itloc });
   const positivi = mydata[mylen - 1].nuovi_positivi;
