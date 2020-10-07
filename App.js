@@ -5,8 +5,14 @@ import url from './config/config';
 import AsyncStorage from '@react-native-community/async-storage';
 import { format } from 'date-fns';
 import itloc from 'date-fns/locale/it';
-import { LineChart } from 'react-native-svg-charts';
-import { Line, Text as Tsvg } from 'react-native-svg';
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart,
+} from 'react-native-chart-kit';
 
 import { colors, sizes } from './config/theme';
 
@@ -85,10 +91,13 @@ export default function App() {
   var_ospedalizzati = (var_ospedalizzati > 0 ? '+' : '') + var_ospedalizzati;
   const data = [];
   const data_death = [];
-
+  const dates = [];
   for (var i = 8; i >= 1; i--) {
     //console.log(mylen - i);
 
+    dates.push(
+      format(Date.parse(mydata[mylen - i].data), 'dd/MM', { locale: itloc })
+    );
     data.push(mydata[mylen - i].nuovi_positivi);
     //console.log(mydata[mylen - i].deceduti);
     if (mylen - i + 1 < mylen) {
@@ -97,31 +106,6 @@ export default function App() {
       );
     }
   }
-  const HorizontalLine = ({ y }) => (
-    <Line
-      key={'zero-axis'}
-      x1={'0%'}
-      x2={'100%'}
-      y1={y(2000)}
-      y2={y(2000)}
-      stroke={'grey'}
-      strokeDasharray={[4, 8]}
-      strokeWidth={2}
-    />
-  );
-
-  const HorizontalLine2 = ({ y }) => (
-    <Line
-      key={'zero-axis'}
-      x1={'0%'}
-      x2={'100%'}
-      y1={y(1600)}
-      y2={y(1600)}
-      stroke={'grey'}
-      strokeDasharray={[4, 8]}
-      strokeWidth={2}
-    />
-  );
 
   return (
     <View style={styles.container}>
@@ -143,33 +127,56 @@ export default function App() {
           <Text style={[styles.title]}>Nuovi positivi {positivi}</Text>
           <Text>Variazione da ieri {new_variation}</Text>
           <LineChart
-            style={{ height: 150 }}
-            data={data}
-            svg={{ stroke: 'rgb(134, 65, 244)' }}
-            contentInset={{ top: 20, bottom: 20 }}
-          >
-            <HorizontalLine />
-            <HorizontalLine2 />
-
-            <Tsvg
-              dy={90}
-              alignmentBaseline={'middle'}
-              textAnchor={'left'}
-              stroke={'rgb(134, 65, 244)'}
-            >
-              2000
-            </Tsvg>
-          </LineChart>
+            width={300} // from react-native
+            height={260}
+            withShadow={false}
+            data={{ datasets: [{ data: data }], labels: dates }}
+            yAxisInterval={1}
+            verticalLabelRotation={-45}
+            chartConfig={{
+              backgroundColor: colors.tgreen,
+              backgroundGradientFrom: colors.tgreen,
+              backgroundGradientTo: colors.tgreen,
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              propsForDots: {
+                r: '2',
+                strokeWidth: '2',
+                stroke: '#ffa726',
+              },
+            }}
+            style={{
+              marginVertical: 10,
+            }}
+          />
         </View>
         <View style={[styles.decessicontainer, styles.boxes]}>
           <Text style={[styles.title]}>Decessi {death_variation}</Text>
           <Text>In totale {mydata[mylen - 1].deceduti}</Text>
           <LineChart
-            style={{ height: 150 }}
-            data={data_death}
-            svg={{ stroke: 'rgb(0, 0, 0)' }}
-            contentInset={{ top: 20, bottom: 20 }}
-          ></LineChart>
+            width={300} // from react-native
+            height={220}
+            data={{ datasets: [{ data: data_death }], labels: dates }}
+            yAxisInterval={1}
+            verticalLabelRotation={-45}
+            chartConfig={{
+              backgroundColor: colors.ruby,
+              backgroundGradientFrom: colors.ruby,
+              backgroundGradientTo: colors.ruby,
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 0,
+              },
+              propsForDots: {
+                r: '2',
+                strokeWidth: '2',
+                stroke: '#ffa726',
+              },
+            }}
+          />
         </View>
         <View style={[styles.tamponicontainer, styles.boxes]}>
           <Text style={[styles.title]}>
