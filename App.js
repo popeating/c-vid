@@ -72,21 +72,42 @@ export default function App() {
   const data = [];
   const data_death = [];
   const dates = [];
+  const data_ti = [];
+  const data_postamp = [];
+  const data_postest = [];
   for (var i = 8; i >= 1; i--) {
     //console.log(mylen - i);
+
+    if (mylen - i + 1 < mylen) {
+      const tamp = mydata[mylen - i + 1].tamponi - mydata[mylen - i].tamponi;
+      const test =
+        mydata[mylen - i + 1].casi_testati - mydata[mylen - i].casi_testati;
+
+      data_postamp.push(
+        ((mydata[mylen - i + 1].nuovi_positivi / tamponi) * 100).toFixed(2)
+      );
+      data_postest.push(
+        ((mydata[mylen - i + 1].nuovi_positivi / test) * 100).toFixed(2)
+      );
+      //const rapporto_t = ((positivi / testati) * 100).toFixed(2);
+    }
 
     dates.push(
       format(Date.parse(mydata[mylen - i].data), 'dd/MM', { locale: itloc })
     );
     data.push(mydata[mylen - i].nuovi_positivi);
-    //console.log(mydata[mylen - i].deceduti);
+
     if (mylen - i + 1 < mylen) {
       data_death.push(
         mydata[mylen - i + 1].deceduti - mydata[mylen - i].deceduti
       );
     }
-  }
 
+    if (mylen - i + 1 < mylen) {
+      data_ti.push(mydata[mylen - i].terapia_intensiva);
+    }
+  }
+  //console.log(data_postest);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -110,7 +131,10 @@ export default function App() {
             width={300} // from react-native
             height={260}
             withShadow={false}
-            data={{ datasets: [{ data: data }], labels: dates }}
+            data={{
+              datasets: [{ data: data }],
+              labels: dates,
+            }}
             yAxisInterval={1}
             verticalLabelRotation={-45}
             chartConfig={{
@@ -165,6 +189,33 @@ export default function App() {
           <Text>In totale {mydata[222].tamponi}</Text>
           <Text>Rapporto positivi/tamponi {rapporto}</Text>
           <Text>Rapporto positivi/testati {rapporto_t}</Text>
+          <LineChart
+            width={300} // from react-native
+            height={260}
+            withShadow={false}
+            data={{
+              datasets: [{ data: data_postest }, { data: data_postamp }],
+              labels: dates,
+            }}
+            yAxisInterval={1}
+            verticalLabelRotation={-45}
+            chartConfig={{
+              backgroundColor: colors.ogreen,
+              backgroundGradientFrom: colors.ogreen,
+              backgroundGradientTo: colors.ogreen,
+              decimalPlaces: 2, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              propsForDots: {
+                r: '2',
+                strokeWidth: '2',
+                stroke: '#ffa726',
+              },
+            }}
+            style={{
+              marginVertical: 10,
+            }}
+          />
         </View>
         <View style={[styles.hospcontainer, styles.boxes]}>
           <Text style={[styles.title]}>
@@ -176,6 +227,31 @@ export default function App() {
           <Text>
             Ospedalizzati {ospedalizzati} ({var_ospedalizzati})
           </Text>
+
+          <LineChart
+            width={300} // from react-native
+            height={260}
+            withShadow={false}
+            data={{ datasets: [{ data: data_ti }], labels: dates }}
+            yAxisInterval={1}
+            verticalLabelRotation={-45}
+            chartConfig={{
+              backgroundColor: colors.canary,
+              backgroundGradientFrom: colors.canary,
+              backgroundGradientTo: colors.canary,
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              propsForDots: {
+                r: '2',
+                strokeWidth: '2',
+                stroke: '#ffa726',
+              },
+            }}
+            style={{
+              marginVertical: 10,
+            }}
+          />
         </View>
       </ScrollView>
     </View>
