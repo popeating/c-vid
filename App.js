@@ -103,11 +103,8 @@ export default function App() {
       );
     }
 
-    if (mylen - i + 1 < mylen) {
-      data_ti.push(mydata[mylen - i].terapia_intensiva);
-    }
+    data_ti.push(mydata[mylen - i].terapia_intensiva);
   }
-  //console.log(data_postest);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
