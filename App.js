@@ -130,7 +130,7 @@ export default function App() {
           <LineChart
             width={300} // from react-native
             height={260}
-            withShadow={false}
+            withShadow={true}
             data={{
               datasets: [{ data: data }],
               labels: dates,
@@ -194,7 +194,13 @@ export default function App() {
             height={260}
             withShadow={false}
             data={{
-              datasets: [{ data: data_postest }, { data: data_postamp }],
+              datasets: [
+                {
+                  data: data_postest,
+                  color: (opacity = 1) => `rgba(220, 80, 80, ${opacity})`,
+                },
+                { data: data_postamp },
+              ],
               labels: dates,
             }}
             yAxisInterval={1}
@@ -207,8 +213,8 @@ export default function App() {
               color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
               propsForDots: {
-                r: '2',
-                strokeWidth: '2',
+                r: '1',
+                strokeWidth: '1',
                 stroke: '#ffa726',
               },
             }}
